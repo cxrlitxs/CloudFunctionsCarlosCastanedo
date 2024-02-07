@@ -12,6 +12,7 @@
  // The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
 const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
+const functions = require("firebase-functions");
 
 // The Firebase Admin SDK to access Firestore.
 const {initializeApp} = require("firebase-admin/app");
@@ -126,3 +127,20 @@ exports.showPosts = onRequest(async (req, res) => {
       res.status(500).send('Error al obtener los posts');
   }
 });
+
+
+//URL para probar (la del ejercicio 1)
+//https://addpost-5ix5bbunda-uc.a.run.app/?nickName=carlos&body=holaa&title=prueba
+
+exports.addtimestamp = functions.firestore
+    .document('pruebaPosts/{docId}')
+    .onCreate(async (snap, context) => {
+        // Obtener el ID del documento recién creado
+        const docId = context.params.docId;
+
+        // Crear un timestamp
+        const timestamp = FieldValue.serverTimestamp();
+
+        // Actualizar el documento con el nuevo campo timestamp
+        return snap.ref.update({ createdAt: timestamp });
+    });
