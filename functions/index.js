@@ -23,16 +23,16 @@ initializeApp();
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
 
- exports.helloWorld = onRequest((request, response) => {
+ exports.helloWorld = functions.region('europe-west1').https.onRequest((request, response) => {
    logger.info("Hello logs!", {structuredData: true});
    response.send("Hello from Firebase!");
  });
 
 
  //URL para probar
- //https://addpost-5ix5bbunda-uc.a.run.app/?nickName=carlos&body=holaa&title=prueba
+ //https://europe-west1-kyty-60f99.cloudfunctions.net/addpost/?nickName=carlos&body=holaa&title=prueba
 
- exports.addpost = onRequest(async (req, res) => {
+ exports.addpost = functions.region('europe-west1').https.onRequest(async (req, res) => {
   // Grab the text parameter.
   const nickName = req.query.nickName;
   const body = req.query.body;
@@ -60,16 +60,16 @@ initializeApp();
   // Send back a message that we've successfully written the message
   res.json({result: `Post con ID: ${writeResult.id} fue insertado correctamente.`});
   } catch (error){
-    console.error("Error al insertar el mensaje: ", error);
+    console.error("Error al insertar el post: ", error);
     res.status(500).send('Error al insertar el post')
   }
 });
 
 
 //URL para probar
-//https://deletepost-5ix5bbunda-uc.a.run.app/?postId=omHRgBnN82dYPD9bQS13
+//https://europe-west1-kyty-60f99.cloudfunctions.net/deletePost/?postId=omHRgBnN82dYPD9bQS13
 
-exports.deletePost = onRequest(async (req, res) => {
+exports.deletePost = functions.region('europe-west1').https.onRequest(async (req, res) => {
   // Obtener el ID del elemento a eliminar de los parámetros de consulta
   const postId = req.query.postId;
 
@@ -84,14 +84,14 @@ exports.deletePost = onRequest(async (req, res) => {
     // Verificar si el documento existe
     const doc = await docRef.get();
     if (!doc.exists) {
-      return res.status(404).send(`No se encontró el elemento con ID: ${postId}`);
+      return res.status(404).send(`No se encontró el post con ID: ${postId}`);
     }
 
       // Eliminar el elemento de Firestore solo si existe
       await docRef.delete();
 
       // Enviar respuesta confirmando la eliminación
-      res.json({ result: `El elemento con ID: ${postId} se eliminó correctamente.` });
+      res.json({ result: `El post con ID: ${postId} se eliminó correctamente.` });
   } catch (error) {
       console.error("Error al eliminar el post: ", error);
       res.status(500).send('Error al eliminar el post');
@@ -99,9 +99,9 @@ exports.deletePost = onRequest(async (req, res) => {
 });
 
 //URL para probar
-//https://showposts-5ix5bbunda-uc.a.run.app/
+//https://europe-west1-kyty-60f99.cloudfunctions.net/showPosts
 
-exports.showPosts = onRequest(async (req, res) => {
+exports.showPosts = functions.region('europe-west1').https.onRequest(async (req, res) => {
   try {
       // Referencia a la colección de Firestore
       const coleccionRef = getFirestore().collection("pruebaPosts");
@@ -132,7 +132,7 @@ exports.showPosts = onRequest(async (req, res) => {
 //URL para probar (la del ejercicio 1)
 //https://addpost-5ix5bbunda-uc.a.run.app/?nickName=carlos&body=holaa&title=prueba
 
-exports.addtimestamp = functions.firestore
+exports.addtimestamp = functions.region('europe-west1').firestore
     .document('pruebaPosts/{docId}')
     .onCreate(async (snap, context) => {
         // Obtener el ID del documento recién creado
@@ -150,7 +150,7 @@ exports.addtimestamp = functions.firestore
     //https://deletepost-5ix5bbunda-uc.a.run.app/?postId=omHRgBnN82dYPD9bQS13
 
 
-    exports.archivePost = functions.firestore
+    exports.archivePost = functions.region('europe-west1').firestore
     .document('pruebaPosts/{docId}')
     .onDelete(async (snap, context) => {
 
