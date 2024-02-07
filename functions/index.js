@@ -96,3 +96,33 @@ exports.deletePost = onRequest(async (req, res) => {
       res.status(500).send('Error al eliminar el post');
   }
 });
+
+//URL para probar
+//https://showposts-5ix5bbunda-uc.a.run.app/
+
+exports.showPosts = onRequest(async (req, res) => {
+  try {
+      // Referencia a la colección de Firestore
+      const coleccionRef = getFirestore().collection("pruebaPosts");
+
+      // Obtener todos los documentos de la colección
+      const snapshot = await coleccionRef.get();
+
+      // Crear un array para almacenar los datos de los documentos
+      const posts = [];
+      snapshot.forEach(doc => {
+          posts.push({ 
+            id: doc.id, 
+            nickName: doc.data().nickName, 
+            title: doc.data().title, 
+            body: doc.data().body 
+        });
+      });
+
+      // Enviar los datos en formato JSON
+      res.json(posts);
+  } catch (error) {
+      console.error("Error al obtener los posts: ", error);
+      res.status(500).send('Error al obtener los posts');
+  }
+});
