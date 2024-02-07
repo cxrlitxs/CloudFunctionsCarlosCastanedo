@@ -144,3 +144,31 @@ exports.addtimestamp = functions.firestore
         // Actualizar el documento con el nuevo campo timestamp
         return snap.ref.update({ createdAt: timestamp });
     });
+
+
+    //URL para probar (la del ejercicio 2)
+    //https://deletepost-5ix5bbunda-uc.a.run.app/?postId=omHRgBnN82dYPD9bQS13
+
+
+    exports.archivePost = functions.firestore
+    .document('pruebaPosts/{docId}')
+    .onDelete(async (snap, context) => {
+
+        //Crear el campo del timeStamp
+        const deletedAt = FieldValue.serverTimestamp();
+        
+        //Dar los valores al documento que se va a archivar
+        const documentoParaArchivar = {
+          nickName: snap.data().nickName, 
+          title: snap.data().title, 
+          body: snap.data().body,
+          createdAt: snap.data().createdAt,
+          deletedAt: deletedAt,
+      };
+
+      //Añadir el documento archivado
+      return getFirestore()
+      .collection("archivePosts")
+      .add(documentoParaArchivar);
+
+    });
