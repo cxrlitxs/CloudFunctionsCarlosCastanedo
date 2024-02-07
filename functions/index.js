@@ -63,3 +63,36 @@ initializeApp();
     res.status(500).send('Error al insertar el post')
   }
 });
+
+
+//URL para probar
+//https://deletepost-5ix5bbunda-uc.a.run.app/?postId=omHRgBnN82dYPD9bQS13
+
+exports.deletePost = onRequest(async (req, res) => {
+  // Obtener el ID del elemento a eliminar de los parámetros de consulta
+  const postId = req.query.postId;
+
+  if (!postId) {
+      return res.status(400).send('ID del post requerido');
+  }
+
+  try {
+    //Localizar el post con el Id
+    const docRef = getFirestore().collection("pruebaPosts").doc(postId);
+
+    // Verificar si el documento existe
+    const doc = await docRef.get();
+    if (!doc.exists) {
+      return res.status(404).send(`No se encontró el elemento con ID: ${postId}`);
+    }
+
+      // Eliminar el elemento de Firestore solo si existe
+      await docRef.delete();
+
+      // Enviar respuesta confirmando la eliminación
+      res.json({ result: `El elemento con ID: ${postId} se eliminó correctamente.` });
+  } catch (error) {
+      console.error("Error al eliminar el post: ", error);
+      res.status(500).send('Error al eliminar el post');
+  }
+});
